@@ -5,17 +5,46 @@ Loja + painel administrativo.
 
 ## Status: aguardando o handoff do design
 
-O design foi feito no **Claude Design** e ainda não chegou ao repositório.
+O design está no **Claude Design**, no projeto
+`b21cffca-1c7f-4694-be9a-869ee560aae2`, e ainda não chegou ao repositório.
 Nada de implementação foi escrito até aqui, de propósito.
 
-O que falta receber (bundle gerado por *Export → Hand off to Claude Code*):
+### Inventário confirmado pelo cliente
 
-- `design/*.dc.html` — as 11 telas, com toda a estilização inline
-- `design/lib/*.js` — regras de negócio e formato dos dados
-- `design/assets/` — logo e vídeos oficiais
-- `README.md` — medidas, cores, tipografia, validações, fluxos, modelos de dados
-- `RP10FUT Admin (offline).html` — admin compilado, apenas referência visual
-- Prints de tela
+O projeto tem os arquivos na raiz e duplicados dentro de
+`design_handoff_rp10fut/design/` (o bundle de handoff foi gerado dentro do
+próprio projeto). São **11 telas**:
+
+Home · Catalog · Product · Cart · MiniCartDrawer · Checkout · Account ·
+MyOrders · Contact · Admin · AdminLogin
+
+Bibliotecas: `lib/products.js`, `lib/cart-store.js`, `lib/orders-store.js`,
+`lib/admin-store.js`, `lib/admin-auth.js`, `lib/user-auth.js`,
+`lib/media-store.js`, além de `support.js` e `doc-page.js`.
+
+Assets: `assets/rp10fut-logo.png`, `assets/hero-video.mp4`,
+`assets/about-hero-video.mp4`.
+
+Também no projeto: `design_handoff_rp10fut/README.md`,
+`RP10FUT Admin (offline).html` (admin compilado, só referência visual) e
+`screenshots/admin-print-check.png`.
+
+### Como buscar os arquivos
+
+Rotas automáticas testadas a partir de uma sessão do Claude Code **web**, todas
+bloqueadas: `DesignSync` (sem escopo de design), o MCP
+`api.anthropic.com/v1/design/mcp` (401), `WebFetch` na URL do projeto (403) e a
+listagem de artifacts (o projeto não é artifact). O motivo é estrutural: a
+autorização de design vem do `/design-login`, que exige terminal interativo.
+
+Duas rotas que funcionam:
+
+1. **Claude Code local, no terminal.** Abrir este repositório, rodar
+   `/design-login` e então colar o prompt de handoff gerado pelo Claude Design
+   (o que aponta para o projeto acima e lista os arquivos). Depois commitar e
+   dar push nos arquivos recebidos.
+2. **"Send to Claude Code Web", no próprio Claude Design.** Semeia o projeto
+   direto no workspace, sem precisar de autorização de design.
 
 Regra combinada com o cliente: **replicar pixel-perfect, nunca inventar valor**.
 Cada cor, padding, peso de fonte, raio de borda e timing de animação deve ser
