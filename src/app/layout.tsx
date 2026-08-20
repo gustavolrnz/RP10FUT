@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   description: "RP10FUT — camisas de futebol personalizadas.",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="pt-BR" className={`${inter.variable} ${anton.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col font-sans">

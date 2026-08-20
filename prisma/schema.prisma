@@ -3,8 +3,14 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  // Pooled (pgbouncer) connection -- what the app uses at runtime.
+  url       = env("DATABASE_URL")
+  // Direct connection -- Prisma Migrate needs this to hold advisory locks,
+  // which don't work over a transaction-mode pooler. Neon's Vercel
+  // integration sets both automatically; only DATABASE_URL is required if
+  // you're not behind a pooler (point directUrl at the same value then).
+  directUrl = env("DATABASE_URL_UNPOOLED")
 }
 
 enum StaffRole {
