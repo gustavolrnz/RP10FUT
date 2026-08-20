@@ -2,6 +2,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { getAllMedia } from "@/lib/data/settings";
 
+// Reads live Postgres data (logo) -- don't let Next try to prerender this at
+// build time. See (site)/layout.tsx for why.
+export const dynamic = "force-dynamic";
+
 export default async function CheckoutLayout({ children }: { children: React.ReactNode }) {
   const media = await getAllMedia();
   const logoSrc = media.logo || "/assets/rp10fut-logo.png";
