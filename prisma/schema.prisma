@@ -1,0 +1,176 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum StaffRole {
+  general_admin
+  operational
+}
+
+enum CouponType {
+  percentage
+  fixed
+}
+
+enum PaymentMethod {
+  pix
+  credit_card
+}
+
+enum PaymentStatus {
+  pending
+  paid
+  failed
+}
+
+model StaffUser {
+  id           String    @id @default(cuid())
+  name         String
+  email        String    @unique
+  passwordHash String
+  role         StaffRole
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@map("staff_users")
+}
+
+/// Customer accounts for the storefront (Account.dc.html). Not used by the
+/// admin panel directly, but part of the shared backend so Checkout / My
+/// Orders / Account can be wired up later without another migration.
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String?
+  provider     String? // 'google' | 'apple' | null for email/password
+  createdAt    DateTime @default(now())
+
+  orders Order[]
+
+  @@map("users")
+}
+
+model Competition {
+  id    String @id
+  label String
+
+  products Product[]
+
+  @@map("competitions")
+}
+
+model Product {
+  id            String   @id @default(cuid())
+  slug          String   @unique
+  name          String
+  team          String
+  competitionId String
+  competition   Competition @relation(fields: [competitionId], references: [id])
+  price         Decimal  @db.Decimal(10, 2)
+  salePrice     Decimal? @db.Decimal(10, 2)
+  imageAltText  String
+  images        String[] @default([])
+  active        Boolean  @default(true)
+
+  stockP  Int @default(0)
+  stockM  Int @default(0)
+  stockG  Int @default(0)
+  stockGG Int @default(0)
+  stockXG Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  orderItems OrderItem[]
+
+  @@index([competitionId])
+  @@map("products")
+}
+
+model Order {
+  id            String        @id @default(cuid())
+  orderNumber   String        @unique
+  email         String
+  /// One of: "Pendente" | "Em produção" | "Enviado" | "Entregue" (see src/lib/constants.ts ORDER_STATUSES)
+  status        String        @default("Pendente")
+  userId        String?
+  user          User?         @relation(fields: [userId], references: [id])
+  items         OrderItem[]
+
+  shipping      Decimal       @db.Decimal(10, 2)
+  discount      Decimal       @db.Decimal(10, 2) @default(0)
+  total         Decimal       @db.Decimal(10, 2)
+
+  fullName      String
+  cep           String
+  address       String
+  number        String
+  neighborhood  String
+  city          String
+  state         String
+
+  paymentMethod PaymentMethod
+  paymentStatus PaymentStatus @default(pending)
+
+  couponCode    String?
+
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@index([email])
+  @@index([status])
+  @@map("orders")
+}
+
+model OrderItem {
+  id           String  @id @default(cuid())
+  orderId      String
+  order        Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId    String?
+  product      Product? @relation(fields: [productId], references: [id])
+  name         String
+  size         String
+  customName   String?
+  customNumber String?
+  qty          Int
+  unitPrice    Decimal @db.Decimal(10, 2)
+  customFee    Decimal @db.Decimal(10, 2) @default(0)
+
+  @@map("order_items")
+}
+
+model Coupon {
+  id         String     @id @default(cuid())
+  code       String     @unique
+  type       CouponType
+  value      Decimal    @db.Decimal(10, 2)
+  expiresAt  DateTime
+  usageLimit Int
+  usedCount  Int        @default(0)
+  active     Boolean    @default(true)
+
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+
+  @@map("coupons")
+}
+
+model Settings {
+  id               Int     @id @default(1)
+  customizationFee Decimal @db.Decimal(10, 2) @default(25.00)
+
+  @@map("settings")
+}
+
+model SiteMedia {
+  key String @id
+  url String
+
+  @@map("site_media")
+}

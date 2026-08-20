@@ -1,0 +1,96 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-inter);
+  --font-mono: ui-monospace, monospace;
+
+  /* Admin panel tokens -- see design_handoff_rp10fut/design/Admin.dc.html */
+  --color-admin-bg: #15171c;
+  --color-admin-panel: #1b1e25;
+  --color-admin-panel-alt: #181a20;
+  --color-admin-input: #101216;
+  --color-admin-border: rgba(255, 255, 255, 0.07);
+  --color-admin-border-strong: rgba(255, 255, 255, 0.15);
+  --color-admin-text: #e6e8eb;
+  --color-admin-text2: #9aa1ac;
+  --color-admin-text3: #7a828f;
+  --color-admin-blue: #2e7cf6;
+  --color-admin-blue-hover: #4a8bf7;
+  --color-admin-green: #16803d;
+  --color-admin-red: #b91c1c;
+  --color-admin-red-text: #f87171;
+  --color-admin-yellow: #facc15;
+  --color-admin-purple: #c084fc;
+  --color-admin-lightblue: #5b9dff;
+  --color-admin-greentext: #4ade80;
+
+  --font-anton: var(--font-anton);
+  --font-inter: var(--font-inter);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: #0a0a0a;
+  color: var(--foreground);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #5a5a5a;
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes heroFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 32s linear infinite;
+}
+
+.animate-hero-headline {
+  opacity: 0;
+  animation: heroFadeUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.15s forwards;
+}
+
+.animate-hero-cta {
+  opacity: 0;
+  animation: heroFadeUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.55s forwards;
+}
+
+/* Product/media placeholder -- same repeating diagonal stripe used across
+   the design wherever a real photo hasn't been uploaded yet. */
+.stripe-placeholder {
+  background-image: repeating-linear-gradient(115deg, #141414, #141414 12px, #191919 12px, #191919 24px);
+}
+.stripe-placeholder-light {
+  background-image: repeating-linear-gradient(115deg, #161616, #161616 12px, #1c1c1c 12px, #1c1c1c 24px);
+}
