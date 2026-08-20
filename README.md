@@ -52,6 +52,30 @@ prisma/
   seed.ts           dados iniciais (produtos, competições, cupons, staff)
 ```
 
+## Deploy na Vercel
+
+O `package.json` já roda `prisma generate` no `postinstall`, então o build funciona direto na Vercel sem
+config extra. Depois de importar o repositório:
+
+1. **Banco de dados**: crie um Postgres (aba Storage da Vercel, ou Neon/Supabase) e conecte ao projeto --
+   isso injeta `DATABASE_URL` automaticamente.
+2. **Variáveis de ambiente**: adicione `AUTH_SECRET` (gere com `openssl rand -base64 32`),
+   `SEED_ADMIN_PASSWORD_1` e `SEED_ADMIN_PASSWORD_2`. `NEXTAUTH_URL` é opcional na Vercel (o app já roda
+   com `trustHost: true`).
+3. **Depois do primeiro deploy**, rode localmente contra o banco de produção (aponte `DATABASE_URL` do seu
+   `.env` para ele) para aplicar as migrations e popular os dados iniciais:
+   ```bash
+   npx prisma migrate deploy
+   npx prisma db seed
+   ```
+
+**Atenção -- upload de mídia não funciona na Vercel como está.** `src/lib/storage.ts` grava arquivos em
+`public/uploads` no disco local; funções serverless da Vercel têm sistema de arquivos somente-leitura fora
+de `/tmp` (que não persiste entre invocações nem deploys). Ou seja: trocar logo/vídeo do hero/fotos de
+depoimento ou fazer upload de fotos de produto pelo admin vai falhar silenciosamente em produção na Vercel
+até isso ser trocado por um storage externo (S3, R2, Vercel Blob). O resto do app -- loja, checkout,
+pedidos, autenticação -- não depende disso e funciona normalmente.
+
 ## O que falta para produção "de verdade"
 
 Escopo já mapeado como pendência desde o handoff original de design, não implementado aqui:
